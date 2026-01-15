@@ -1,0 +1,22 @@
+# virtual environment
+venv/
+ENV/
+.venv/
+env/
+
+# environment variables
+.env/
+.env
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# ruff cache
+.ruff_cache/
