@@ -12,6 +12,7 @@ env/
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
 
 # Distribution / packaging
 build/
@@ -20,3 +21,7 @@ dist/
 
 # ruff cache
 .ruff_cache/
+
+# remove all output files
+output/*.md
+!output/README.md

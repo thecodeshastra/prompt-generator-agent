@@ -1,20 +1,20 @@
 """LiteLLM provider"""
 
 # Standard library imports
+import warnings
 from typing import Optional
 
 # Third-party imports
 import litellm
-import warnings
+
+# Local imports
+from core.utils.logger import logger
+from interfaces.base_provider import BaseProvider
 
 # Suppress LiteLLM and Pydantic warnings
 litellm.suppress_warnings = True
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic.main")
 warnings.filterwarnings("ignore", message=".*PydanticSerializationUnexpectedValue.*")
-
-# Local imports
-from interfaces.base_provider import BaseProvider
-from core.utils.logger import logger
 
 
 class LiteLLMProvider(BaseProvider):

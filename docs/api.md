@@ -56,8 +56,8 @@ result = orchestrator.run_pipeline("Generate a prompt for summarization")
 
 Settings are loaded from `src/config/settings.py`. Key variables:
 
-- `PROVIDER`: AI provider to use ("litellm" only)
-- `MODEL_NAME`: Model identifier (e.g., "gpt-4", "gemini/gemini-1.5-pro", "claude-3")
+- `PROVIDER`: AI provider to use ("litellm", "ollama", or "openai")
+- `MODEL_NAME`: Model identifier (e.g., "gpt-4o", "gemini/gemini-1.5-pro", "llama3.1:8b")
 - `TEMPERATURE`: Generation temperature (0.0-1.0)
 - `MAX_TOKENS`: Maximum tokens per response
 - `USE_MEMORY`: Enable/disable memory for generation (bool)
@@ -75,6 +75,22 @@ Unified access to 100+ LLMs via LiteLLM.
 - Google: "gemini/gemini-1.5-pro"
 - Anthropic: "claude-3-opus"
 - And 100+ more!
+
+### OpenAIProvider
+
+Native implementation using the official OpenAI SDK. Compatible with any OpenAI-style API.
+
+**Init:** `__init__(model_name, api_key, base_url, temperature, max_tokens)`
+
+**Supported Models:** Any model supported by OpenAI (e.g., "gpt-4o", "gpt-4-turbo").
+
+### OllamaProvider
+
+Native implementation for local LLMs via Ollama.
+
+**Init:** `__init__(model_name, temperature)`
+
+**Supported Models:** Any model loaded in your local Ollama instance (e.g., "llama3.1:8b", "mistral").
 
 ## Memory System
 

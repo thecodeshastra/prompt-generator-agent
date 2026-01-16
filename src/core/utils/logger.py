@@ -4,7 +4,6 @@
 import logging
 
 # Third-party imports
-
 # Local imports
 from config.settings import LOG_LEVEL
 

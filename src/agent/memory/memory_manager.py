@@ -3,10 +3,9 @@
 # Standard library imports
 import os
 import re
-from typing import List, Dict, Any
+from typing import Dict, List
 
 # Third-party imports
-
 # Local imports
 from core.utils.logger import logger
 

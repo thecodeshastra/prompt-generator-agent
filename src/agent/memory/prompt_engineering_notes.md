@@ -45,7 +45,7 @@ Tags: Agent Prompt, Prompt
 - TONE: The desired style. (e.g., "professional," "humorous.")
 - Template:
     
-    ```jsx
+    ```markdown
     [ROLE]: Act as [specific role/expert]
     [CONTEXT]: In the context of [situation/background]
     [TASK]: [Specific action or output desired]
@@ -55,7 +55,7 @@ Tags: Agent Prompt, Prompt
     
 - Practical Example:
     
-    ```jsx
+    ```markdown
     ROLE: Act as a financial advisor
     CONTEXT: For a 25-year-old recent graduate with student loans
     TASK: Create a beginner's guide to building an emergency fund
@@ -68,7 +68,7 @@ Tags: Agent Prompt, Prompt
 
 - A systematic approach to prompt construction:
 
-```jsx
+```markdown
 **C** - **Context**: Provide relevant background information
 **L** - **Length**: Specify desired output length
 **E** - **Examples**: Show what good output looks like
@@ -78,7 +78,7 @@ Tags: Agent Prompt, Prompt
 
 - Framework in Action:
 
-```jsx
+```markdown
 CONTEXT: We're launching a new fitness app for busy professionals
 LENGTH: Write a 200-word product description
 EXAMPLES: Like Apple's clean, benefit-focused product descriptions
@@ -98,7 +98,7 @@ FORMAT: [How you want the response structured]
 
 ### The Audience-Purpose-Action Structure
 
-```
+```markdown
 AUDIENCE: [Who will use this information]
 PURPOSE: [Why they need it]
 ACTION: [What they should be able to do with it]

@@ -6,17 +6,20 @@
 
 # Local imports
 from config.settings import (
-    PROVIDER,
-    MODEL_NAME,
-    TEMPERATURE,
-    MAX_TOKENS,
-    TIMEOUT_SECONDS,
-    MAX_RETRIES,
-    RETRY_BACKOFF,
     LITELLM_MAX_TOKENS,
+    MAX_RETRIES,
+    MAX_TOKENS,
+    MODEL_NAME,
+    OPENAI_BASE_URL,
+    PROVIDER,
+    RETRY_BACKOFF,
+    TEMPERATURE,
+    TIMEOUT_SECONDS,
 )
+from core.exceptions import ConfigurationError
 from core.providers.litellm import LiteLLMProvider
 from core.providers.ollama import OllamaProvider
+from core.providers.openai_sdk import OpenAIProvider
 from core.utils.logger import logger
 
 
@@ -45,5 +48,12 @@ def get_provider():
             model_name=MODEL_NAME,
             temperature=TEMPERATURE,
         )
+    elif PROVIDER == "openai":
+        return OpenAIProvider(
+            model_name=MODEL_NAME,
+            base_url=OPENAI_BASE_URL,
+            temperature=TEMPERATURE,
+            max_tokens=MAX_TOKENS,
+        )
     else:
-        raise ValueError(f"Only 'litellm' provider is supported. Got: {PROVIDER}")
+        raise ConfigurationError(f"Unknown provider: {PROVIDER}. Supported: 'litellm', 'ollama', 'openai'")

@@ -1,17 +1,19 @@
 """Test case generator agent."""
 
 # Standard library imports
-import os
 import json
-from typing import Dict, Any
+import os
+from typing import Any, Dict
 
 # Third-party imports
 from pypdf import PdfReader
 
+from core.exceptions import ParsingError, ProviderError
+from core.utils.logger import logger
+
 # Local imports
 from interfaces.base_agent import BaseAgent
 from interfaces.base_provider import BaseProvider
-from core.utils.logger import logger
 
 
 class TestCaseGenerator(BaseAgent):
@@ -19,18 +21,17 @@ class TestCaseGenerator(BaseAgent):
     Agent responsible for generating test cases for validated prompts.
     """
 
-    def __init__(self, provider: BaseProvider, benchmark_pdf: str = "benchmark.pdf"):
+    def __init__(self, provider: BaseProvider):
         """
         Initialize the test case generator agent.
 
         Args:
-            provider (BaseProvider): The AI provider to use.
-            benchmark_pdf (str): Path to the benchmark PDF file.
+            provider (BaseProvider): The LLM provider to use.
         """
         super().__init__(provider)
         self.prompt_template = ""
         self.benchmark_content = ""
-        self.benchmark_pdf = os.path.join(os.path.dirname(__file__), benchmark_pdf)
+        self.benchmark_pdf = os.path.join(os.path.dirname(__file__), "benchmark.pdf")
         self._load_benchmark()
         self._load_prompt_template()
 
@@ -100,19 +101,23 @@ Output as JSON array: [{"input": "example", "expected_output": "result"}]
         logger.info("Starting test case generation.")
 
         # Build the full prompt
-        system_prompt = f"{self.prompt_template}\n\nBenchmark Guidelines:\n{self.benchmark_content}" if self.benchmark_content else self.prompt_template
+        if self.benchmark_content:
+            system_prompt = f"{self.prompt_template}\n\nBenchmark Guidelines:\n{self.benchmark_content}"
+        else:
+            system_prompt = self.prompt_template
         full_prompt = f"Approved Prompt:\n{approved_prompt}"
 
         # Generate response
         try:
             response = self.provider.generate(full_prompt, system_prompt=system_prompt)
             logger.info("Test case generation successful.")
-            logger.debug(f"Raw test case response: {repr(response)}")
+        except Exception as e:
+            logger.error(f"Test case generation failed: {e}")
+            raise ProviderError(f"Failed to generate test cases from provider: {e}") from e
 
-            # Parse JSON response
-            import re
-            content = response.strip()
-
+        import re
+        content = response
+        try:
             # 1. Try to extract JSON from markdown code blocks
             json_match = re.search(r"```(?:json)?\s*(\[.*?\]|\{.*?\})\s*```", content, re.DOTALL)
             if json_match:
@@ -124,31 +129,32 @@ Output as JSON array: [{"input": "example", "expected_output": "result"}]
                 if start != len(content) + 1 and end != -1:
                     content = content[start : end + 1]
 
-            test_cases = json.loads(content)
-            
-            # Ensure it's a list (some models might wrap a single test case in an object)
-            if isinstance(test_cases, dict):
-                # Look for a list inside the dict
-                for key, val in test_cases.items():
-                    if isinstance(val, list):
-                        test_cases = val
-                        break
-                else:
-                    test_cases = [test_cases]
+            try:
+                result = json.loads(content)
+                
+                # Handle cases where the LLM might wrap the array in a dict
+                if isinstance(result, dict) and "test_cases" in result:
+                    result = result["test_cases"]
+                elif isinstance(result, dict):
+                    # Try to find any list in the dict
+                    for val in result.values():
+                        if isinstance(val, list):
+                            result = val
+                            break
+                
+                if not isinstance(result, list):
+                    raise ParsingError(f"Expected a list of test cases, got {type(result)}")
 
-            if not isinstance(test_cases, list):
-                raise ValueError("Response is not a list of test cases.")
+                return {
+                    "test_cases": result[:5],  # Ensure we return at most 5
+                    "count": len(result)
+                }
+            except json.JSONDecodeError as je:
+                logger.error(f"TestCase JSON validation failed: {je}")
+                raise ParsingError(f"Failed to parse test cases JSON: {je}") from je
 
-            return {
-                "test_cases": test_cases,
-                "count": len(test_cases),
-            }
-        except (json.JSONDecodeError, ValueError, Exception) as e:
-            logger.error(f"Test case generation failed or invalid response: {e}")
-            logger.debug(f"Failed response content: {repr(response)}")
-            # Fallback: empty list
-            return {
-                "test_cases": [],
-                "count": 0,
-                "error": str(e),
-            }
+        except Exception as e:
+            if isinstance(e, ParsingError):
+                raise
+            logger.error(f"Test case parsing error: {e}")
+            raise ParsingError(f"Unexpected error during test case parsing: {e}") from e

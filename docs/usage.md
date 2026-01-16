@@ -27,8 +27,9 @@ streamlit run src/ui.py
 ## 4. Output Management
 - All final results are stored in `output/` as Markdown files.
 - Each file includes the final prompt, the reviewer's audit, and the generated test cases.
-g memory
-3. **Review**: AI evaluates the prompt (rating 1-5, approval)
-4. **Test Cases**: If approved, AI generates validation examples
 
-## Memory Integration
+## 5. Memory Integration
+- We have implemented a memory system to store the generated prompts and their reviews.
+- We have prompt engineering notes in `src/agent/memory` directory.
+- We also have benchmark consideration for test case generator inside memory directory.
+- We also have detailed prompts for each agent in `src/agent/prompts` directory.

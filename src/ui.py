@@ -1,15 +1,16 @@
 """Streamlit UI for the prompt generator agent."""
 
-import sys
 import os
+import sys
+
 import streamlit as st
 
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
 from agent.orchestrator import PromptGeneratorOrchestrator
-from core.utils.logger import logger
 from core.utils.exporter import save_result_to_markdown
+from core.utils.logger import logger
 
 
 def main():
@@ -109,10 +110,13 @@ def main():
                 if "error" in result:
                     st.error(f"Pipeline Error: {result['error']}")
 
-                # Save to file
-                saved_path = save_result_to_markdown(result, user_input)
-                if saved_path:
-                    st.info(f"📁 Result automatically saved to: `{saved_path}`")
+                # Save to file only on success
+                if not result.get("error") \
+                 and result.get("generated_prompt") \
+                 and result.get("generated_prompt") != "Failed to generate":
+                    saved_path = save_result_to_markdown(result, user_input)
+                    if saved_path:
+                        st.info(f"📁 Result automatically saved to: `{saved_path}`")
 
             except Exception as e:
                 logger.error(f"UI error: {e}")

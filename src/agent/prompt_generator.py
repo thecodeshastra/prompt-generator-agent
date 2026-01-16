@@ -1,11 +1,14 @@
 """Prompt generator agent."""
 
 import os
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
+from core.exceptions import ProviderError
+from core.utils.logger import logger
 from interfaces.base_agent import BaseAgent
 from interfaces.base_provider import BaseProvider
+
 from .memory.memory_manager import MemoryManager
-from core.utils.logger import logger
 
 
 class PromptGenerator(BaseAgent):
@@ -20,17 +23,12 @@ class PromptGenerator(BaseAgent):
         Initialize the prompt generator agent.
 
         Args:
-            provider (BaseProvider): The AI provider to use.
-            use_memory (bool): Whether to use memory for notes.
+            provider (BaseProvider): The LLM provider to use.
+            use_memory (bool): Whether to use the memory manager for contextual notes.
         """
         super().__init__(provider)
         self.use_memory = use_memory
-        self.memory_manager: Optional[MemoryManager] = None
-        self.prompt_template = ""
-
-        if self.use_memory:
-            self.memory_manager = MemoryManager()
-
+        self.memory_manager = MemoryManager() if use_memory else None
         self._load_prompt_template()
 
     def _load_prompt_template(self) -> None:
@@ -64,7 +62,12 @@ Generate a high-quality prompt based on the user's description.
 Make it clear, specific, and actionable.
 """
 
-    def run(self, user_input: str, previous_prompt: Optional[str] = None, feedback: Optional[str] = None) -> Dict[str, Any]:
+    def run(
+        self,
+        user_input: str,
+        previous_prompt: Optional[str] = None,
+        feedback: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """
         Generate a prompt based on user input, with optional improvement feedback.
 
@@ -79,21 +82,23 @@ Make it clear, specific, and actionable.
         logger.info("Starting prompt generation.")
 
         # Get relevant memory notes
-        memory_notes = ""
+        relevant_notes = ""
         if self.memory_manager:
             notes = self.memory_manager.get_relevant_notes(user_input)
             logger.debug(f"Retrieved notes: {type(notes)}, value: {repr(notes)}")
             if notes:
                 logger.debug("Processing notes as string")
-                memory_notes = "\n\nRelevant Notes:\n" + notes
+                relevant_notes = "\n\nRelevant Notes:\n" + notes
 
         # Build the full prompt
         improvement_section = ""
         if previous_prompt and feedback:
-            improvement_section = f"\n\nPrevious Prompt:\n{previous_prompt}\n\nFeedback: {feedback}\n\nPlease improve the prompt based on this feedback."
+            p_prompt = "\n\nPrevious Prompt:\n{previous_prompt}\n\n"
+            f_prompt = "Feedback: {feedback}\n\nPlease improve the prompt based on this feedback."
+            improvement_section = f"{p_prompt}{f_prompt}"
 
         full_prompt = (
-            f"{memory_notes}\n\nUser Request: {user_input}{improvement_section}"
+            f"{relevant_notes}\n\nUser Request: {user_input}{improvement_section}"
         ).strip()
 
         # Generate response
@@ -102,10 +107,12 @@ Make it clear, specific, and actionable.
             logger.info("Prompt generation successful.")
             return {
                 "generated_prompt": generated_prompt.strip(),
-                "memory_used": bool(memory_notes),
-                "notes_count": len(notes) if "notes" in locals() else 0,
+                "memory_used": bool(relevant_notes),
+                "notes_count": len(relevant_notes.split("\n\n")) if relevant_notes else 0,
                 "improved": bool(previous_prompt and feedback),
             }
         except Exception as e:
             logger.error(f"Prompt generation failed: {e}")
-            raise
+            if isinstance(e, ProviderError):
+                raise
+            raise ProviderError(f"Failed to generate prompt: {e}") from e

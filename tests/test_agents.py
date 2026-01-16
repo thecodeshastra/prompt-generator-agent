@@ -1,7 +1,11 @@
-"""Unit tests for the prompt generator agent."""
-
+import os
+import sys
 import unittest
 from unittest.mock import Mock, patch
+
+# Add src to path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+
 from agent.orchestrator import PromptGeneratorOrchestrator
 from agent.prompt_generator import PromptGenerator
 from agent.prompt_reviewer import PromptReviewer
@@ -63,7 +67,7 @@ class TestTestCaseGenerator(unittest.TestCase):
 class TestOrchestrator(unittest.TestCase):
     """Test the orchestrator pipeline."""
 
-    @patch("agent.prompt_generator_agent.orchestrator.get_provider")
+    @patch("agent.orchestrator.get_provider")
     def test_full_pipeline_approved(self, mock_get_provider):
         """Test full pipeline with approval."""
         # Mock responses

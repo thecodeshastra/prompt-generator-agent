@@ -1,10 +1,12 @@
 """Prompt reviewer agent."""
 
 import os
-from typing import Dict, Any
+from typing import Any, Dict
+
+from core.exceptions import ParsingError, ProviderError
+from core.utils.logger import logger
 from interfaces.base_agent import BaseAgent
 from interfaces.base_provider import BaseProvider
-from core.utils.logger import logger
 
 
 class PromptReviewer(BaseAgent):
@@ -17,7 +19,7 @@ class PromptReviewer(BaseAgent):
         Initialize the prompt reviewer agent.
 
         Args:
-            provider (BaseProvider): The AI provider to use.
+            provider (BaseProvider): The LLM provider to use.
         """
         super().__init__(provider)
         self.prompt_template = ""
@@ -75,14 +77,18 @@ Output in JSON format: {"approved": bool, "rating": int, "feedback": str}
         try:
             response = self.provider.generate(full_prompt, system_prompt=self.prompt_template)
             logger.info("Prompt review successful.")
-            logger.debug(f"Raw review response: {repr(response)}")
+        except Exception as e:
+            logger.error(f"Review generation failed: {e}")
+            raise ProviderError(f"Failed to get review from provider: {e}") from e
 
-            # Parse JSON response
-            import json
-            import re
+        logger.debug(f"Raw review response: {repr(response)}")
 
-            content = response.strip()
-            
+        # Parse JSON response
+        import json
+        import re
+
+        content = response.strip() # Keep .strip() from original
+        try:
             # 1. Try to extract JSON from markdown code blocks
             json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", content, re.DOTALL)
             if json_match:
@@ -93,9 +99,31 @@ Output in JSON format: {"approved": bool, "rating": int, "feedback": str}
                 end = content.rfind('}')
                 if start != -1 and end != -1:
                     content = content[start : end + 1]
+                else:
+                    raise ParsingError("No JSON object found in response.")
 
             try:
                 result = json.loads(content)
+                # Validation
+                if not isinstance(result.get("approved"), bool):
+                    # Attempt to convert to bool if not already
+                    approved_val = result.get("approved")
+                    if approved_val is None:
+                        result["approved"] = False
+                    else:
+                        result["approved"] = str(approved_val).lower() == "true"
+                if not isinstance(result.get("rating"), (int, float)):
+                    # Attempt to convert to int if not already
+                    rating_val = result.get("rating")
+                    try:
+                        result["rating"] = int(rating_val) if rating_val is not None else 1
+                    except (ValueError, TypeError):
+                        result["rating"] = 1 # Default to 1 if conversion fails
+                
+                # Ensure feedback is a string
+                if not isinstance(result.get("feedback"), str):
+                    result["feedback"] = str(result.get("feedback", "No feedback provided."))
+
                 return {
                     "approved": result.get("approved", False),
                     "rating": result.get("rating", 1),
@@ -108,21 +136,17 @@ Output in JSON format: {"approved": bool, "rating": int, "feedback": str}
                 rating_match = re.search(r'"rating":\s*(\d+)', response)
                 approved_match = re.search(r'"approved":\s*(true|false)', response, re.I)
                 feedback_match = re.search(r'"feedback":\s*"([^"]+)"', response)
-                
+                feedback = feedback_match.group(1) if feedback_match else "Extracted from malformed JSON."
                 if rating_match and approved_match:
                     return {
                         "approved": approved_match.group(1).lower() == "true",
                         "rating": int(rating_match.group(1)),
-                        "feedback": feedback_match.group(1) if feedback_match else "Extracted from malformed JSON.",
+                        "feedback": feedback,
                     }
-                raise je
-
-        except (json.JSONDecodeError, Exception) as e:
-            logger.error(f"Prompt review failed or invalid response: {e}")
-            logger.debug(f"Failed response content: {repr(response)}")
-            # Fallback: assume not approved
-            return {
-                "approved": False,
-                "rating": 1,
-                "feedback": f"Review failed to parse response: {str(e)}",
-            }
+                raise ParsingError(f"Failed to parse review JSON and fallback failed: {je}") from je
+                
+        except Exception as e:
+            if isinstance(e, ParsingError):
+                raise
+            logger.error(f"Review parsing error: {e}")
+            raise ParsingError(f"Unexpected error during review parsing: {e}") from e

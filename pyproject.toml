@@ -15,7 +15,10 @@ dependencies = [
     "google-generativeai>=0.3.0",
     "streamlit>=1.28.0",
     "python-dotenv>=1.0.0",
+    "python-decouple>=3.8",
     "pydantic>=2.0.0",
+    "pypdf>=4.0.0",
+    "requests>=2.31.0",
 ]
 
 [project.scripts]
@@ -24,3 +27,13 @@ prompt-generator-ui = "src.ui:main"
 
 [tool.setuptools]
 packages = ["src"]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+fix = true
+
+[tool.pytest.ini_options]
+python_classes = ["Test*", "!TestCaseGenerator"]

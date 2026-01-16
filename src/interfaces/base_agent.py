@@ -4,7 +4,6 @@
 from abc import ABC, abstractmethod
 
 # Third-party imports
-
 # Local imports
 from interfaces.base_provider import BaseProvider
 

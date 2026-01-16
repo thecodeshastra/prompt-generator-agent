@@ -1,4 +1,4 @@
-# Prompt Generator Outputs
+# Prompt Generator Outputs Format
 
 This directory contains the automatically generated results from the Prompt Generator Agent.
 

@@ -2,26 +2,33 @@
 
 import os
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 from core.utils.logger import logger
 
-def save_result_to_markdown(result: Dict[str, Any], user_input: str, output_dir: str = "output"):
+# Define the output directory as a constant
+# Get the root directory (assuming this file is in src/core/utils)
+_ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+OUTPUT_DIR = os.path.join(_ROOT_DIR, "output")
+
+def save_result_to_markdown(result: Dict[str, Any], user_input: str) -> Optional[str]:
     """
-    Save the pipeline result to a markdown file.
+    Export the pipeline result to a formatted markdown file.
 
     Args:
-        result (Dict[str, Any]): The pipeline result dictionary.
-        user_input (str): The original user input description.
-        output_dir (str): The directory to save the file in.
+        result (Dict[str, Any]): The complete result dictionary from the orchestrator.
+        user_input (str): The original user request string.
+
+    Returns:
+        Optional[str]: The absolute path to the saved file, or None if saving failed.
     """
     try:
-        # Ensure output directory exists
-        # Get the root directory (assuming this file is in src/core/utils)
-        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-        abs_output_dir = os.path.join(root_dir, output_dir)
-        
-        if not os.path.exists(abs_output_dir):
-            os.makedirs(abs_output_dir)
+        if not os.path.exists(OUTPUT_DIR):
+            try:
+                os.makedirs(OUTPUT_DIR)
+            except OSError as e:
+                logger.error(f"Failed to create output directory {OUTPUT_DIR}: {e}")
+                return None
 
         # Generate filename: title + datetime
         # Extract a short title from user input (first 3 words)
@@ -29,7 +36,7 @@ def save_result_to_markdown(result: Dict[str, Any], user_input: str, output_dir:
         title = "_".join(clean_input.split()[:3]).lower() or "prompt"
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{title}_{timestamp}.md"
-        filepath = os.path.join(abs_output_dir, filename)
+        filepath = os.path.join(OUTPUT_DIR, filename)
 
         # Build markdown content
         md_content = f"# Prompt Generation Result: {clean_input[:50]}\n\n"

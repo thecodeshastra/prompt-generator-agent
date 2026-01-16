@@ -1,13 +1,16 @@
 """Orchestrator for the prompt generator agent pipeline."""
 
-from typing import Dict, Any, Optional
-from interfaces.base_provider import BaseProvider
-from core.provider_factory import get_provider
+from typing import Any, Dict, Optional
+
 from config.settings import USE_MEMORY
+from core.exceptions import ParsingError, ProviderError
+from core.provider_factory import get_provider
+from core.utils.logger import logger
+from interfaces.base_provider import BaseProvider
+
 from .prompt_generator import PromptGenerator
 from .prompt_reviewer import PromptReviewer
 from .test_case_generator import TestCaseGenerator
-from core.utils.logger import logger
 
 
 class PromptGeneratorOrchestrator:
@@ -33,18 +36,26 @@ class PromptGeneratorOrchestrator:
 
         Args:
             user_input (str): The user's prompt description.
-            max_iterations (int): Maximum iterations for improvement loop.
+            max_iterations (int): Maximum iterations for refinement loop.
 
         Returns:
-            Dict[str, Any]: Complete pipeline result.
+            Dict[str, Any]: A dictionary containing:
+                - 'generated_prompt': The final approved prompt text.
+                - 'review': The final review result (Dict).
+                - 'test_cases': List of generated test cases (Optional[List]).
+                - 'history': Full iteration history (List).
+                - 'error': Error message if the pipeline failed (Optional[str]).
+
+        Raises:
+            OrchestratorError: If a fatal error occurs during coordination.
         """
         logger.info("Starting prompt generator pipeline.")
 
-        result = {}
-        iteration = 0
-        previous_prompt = None
-        feedback = None
-        history = []
+        result: Dict[str, Any] = {}
+        iteration: int = 0
+        previous_prompt: Optional[str] = None
+        feedback: Optional[str] = None
+        history: list = []
 
         try:
             while iteration < max_iterations:
@@ -98,8 +109,13 @@ class PromptGeneratorOrchestrator:
             logger.info("Pipeline completed successfully.")
             return result
 
-        except Exception as e:
-            logger.error(f"Pipeline failed: {e}")
+        except (ProviderError, ParsingError) as e:
+            logger.error(f"Pipeline failed at agent level: {e}")
             result["error"] = str(e)
+            result["history"] = history
+            return result
+        except Exception as e:
+            logger.error(f"Pipeline failed with unexpected error: {e}")
+            result["error"] = f"Unexpected pipeline error: {e}"
             result["history"] = history
             return result
