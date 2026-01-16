@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [2.0.1] - 2026-01-16
+
+#### Updated
+- Updated UI to show full logs in detail for each step update (Running generator, Running reviewer, Running test  case generator). 
+- Finalized output format in ui only generate in UI so that user can easily copy paste instead of saving file.
+
 ### [2.0.0] - 2026-01-16
 
 #### Added
