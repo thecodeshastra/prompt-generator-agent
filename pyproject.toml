@@ -33,7 +33,7 @@ line-length = 110
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
-fix = true
+fixable = ["E", "F", "I"]
 
 [tool.pytest.ini_options]
 python_classes = ["Test*", "!TestCaseGenerator"]

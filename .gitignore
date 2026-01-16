@@ -25,3 +25,6 @@ dist/
 # remove all output files
 output/*.md
 !output/README.md
+
+# others
+.coverage

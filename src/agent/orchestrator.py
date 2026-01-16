@@ -122,7 +122,7 @@ class PromptGeneratorOrchestrator:
                         result["test_error"] = str(te)
                     break
                 else:
-                    msg = f"Prompt not approved. Feedback provided. Refining..."
+                    msg = "Prompt not approved. Feedback provided. Refining..."
                     logger.info(msg)
                     if status_callback:
                         status_callback(msg)

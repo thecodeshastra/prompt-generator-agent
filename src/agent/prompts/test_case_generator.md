@@ -58,6 +58,7 @@ Each object in the array MUST have the following structure:
   {
     "input": "The message the user would have sent to test the prompt",
     "expected_output": "The suggested correct answer or response and benchmark criteria",
+    "correct_answer": "<Suggest possible answers but tell the user to fill in this part>",
     "rubric": "A scoring rubric for this specific test case"
   }
 ]
