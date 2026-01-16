@@ -39,88 +39,90 @@ def main():
     if st.button("Generate Prompt", type="primary"):
         if not user_input.strip():
             st.error("Please enter a description.")
-            return
+        else:
+            # Status and Log containers
+            status_container = st.status("Processing Pipeline...", expanded=True)
+            
+            def update_log(message):
+                if "logs" not in st.session_state:
+                    st.session_state.logs = []
+                st.session_state.logs.append(message)
+                status_container.write(message)
 
-        with st.status("Processing Pipeline...", expanded=True) as status:
             try:
-                st.write("Initializing orchestrator...")
+                st.session_state.logs = [] # Reset logs
                 orchestrator = st.session_state.orchestrator
                 
-                st.write("Running iteration analysis...")
-                result = orchestrator.run_pipeline(user_input)
+                # Run pipeline with callback
+                result = orchestrator.run_pipeline(user_input, status_callback=update_log)
 
-                st.write("Finalizing results...")
-                status.update(label="Pipeline Completed!", state="complete", expanded=False)
+                status_container.update(label="Pipeline Completed!", state="complete", expanded=False)
 
                 # Store result in session
                 st.session_state.result = result
 
-                # Display generated prompt
-                st.header("Step 2: Generated Prompt")
-                generated_prompt = result.get("generated_prompt", "Failed to generate")
-                st.text_area(
-                    "Generated Prompt:",
-                    value=generated_prompt,
-                    height=200,
-                    disabled=True,
-                )
-
-                # Display review
-                st.header("Step 3: Review Results")
-                review = result.get("review", {})
-                approved = review.get("approved", False)
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    if approved:
-                        st.success("✅ Approved")
-                    else:
-                        st.error("❌ Not Approved")
-                with col2:
-                    st.metric("Rating", f"{review.get('rating', 'N/A')}/5")
-
-                st.text_area(
-                    "Reviewer Feedback:",
-                    value=review.get("feedback", "No feedback provided."),
-                    height=100,
-                    disabled=True,
-                )
-
-                # Test cases
-                st.header("Step 4: Test Cases")
-                test_cases = result.get("test_cases")
-                
-                if approved:
-                    if test_cases:
-                        st.success(f"Generated {len(test_cases)} test cases")
-                        for i, tc in enumerate(test_cases, 1):
-                            with st.expander(f"Test Case {i}"):
-                                st.markdown(f"**Input:** {tc.get('input', 'N/A')}")
-                                st.markdown(f"**Expected Output:** {tc.get('expected_output', 'N/A')}")
-                                if tc.get('rubric'):
-                                    st.markdown(f"**Rubric:** {tc.get('rubric')}")
-                    elif test_cases == []:
-                        error_msg = result.get("test_error", "Unknown error in test generation.")
-                        st.error(f"Failed to generate test cases: {error_msg}")
-                    else:
-                        st.info("Test cases were skipped or not yet generated.")
-                else:
-                    st.warning("No test cases generated because the prompt was not approved.")
-
-                if "error" in result:
-                    st.error(f"Pipeline Error: {result['error']}")
-
-                # Save to file only on success
-                if not result.get("error") \
-                 and result.get("generated_prompt") \
-                 and result.get("generated_prompt") != "Failed to generate":
-                    saved_path = save_result_to_markdown(result, user_input)
-                    if saved_path:
-                        st.info(f"📁 Result automatically saved to: `{saved_path}`")
-
             except Exception as e:
                 logger.error(f"UI error: {e}")
                 st.error(f"An error occurred: {e}")
+                status_container.update(label="Pipeline Failed", state="error")
+                st.session_state.result = None
+
+    # --- DISPLAY RESULTS (Persistently) ---
+    if "result" in st.session_state and st.session_state.result:
+        result = st.session_state.result
+        st.divider()
+        st.header("Final Result")
+        
+        generated_prompt = result.get("generated_prompt", "Failed to generate")
+        
+        # Output Box for Copying
+        st.subheader("🚀 Generated Prompt")
+        st.caption("Copy the generated prompt below:")
+        st.code(generated_prompt, language="markdown")
+
+        # Review Details in Columns
+        st.subheader("📋 Review Audit")
+        review = result.get("review", {})
+        approved = review.get("approved", False)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if approved:
+                st.success("Verdict: Approved")
+            else:
+                st.error("Verdict: Rejected")
+        with col2:
+            st.metric("Quality Rating", f"{review.get('rating', 'N/A')}/5")
+
+        st.info(f"**Reviewer Feedback:** {review.get('feedback', 'No feedback provided.')}")
+
+        # Test cases
+        st.subheader("🧪 Validation Test Cases")
+        test_cases = result.get("test_cases")
+        
+        if approved:
+            if test_cases:
+                for i, tc in enumerate(test_cases, 1):
+                    with st.expander(f"Test Case {i}: {tc.get('input', 'N/A')[:50]}..."):
+                        st.markdown(f"**Input:**\n{tc.get('input', 'N/A')}")
+                        st.markdown(f"**Expected Output:**\n{tc.get('expected_output', 'N/A')}")
+                        if tc.get('rubric'):
+                            st.markdown(f"**Rubric:** {tc.get('rubric')}")
+            elif test_cases == []:
+                error_msg = result.get("test_error", "Unknown error in test generation.")
+                st.error(f"Failed to generate test cases: {error_msg}")
+            else:
+                st.info("Test cases were skipped.")
+        else:
+            st.warning("Test cases skipped (Prompt not approved).")
+
+        if "error" in result:
+            st.error(f"Pipeline Error: {result['error']}")
+
+    # Persistent log view at the bottom if logs exist
+    if "logs" in st.session_state and st.session_state.logs:
+        with st.expander("Show Full Pipeline Logs", expanded=False):
+            st.code("\n".join(st.session_state.logs), language="text")
 
 
 if __name__ == "__main__":

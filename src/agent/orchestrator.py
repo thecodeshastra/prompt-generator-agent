@@ -1,6 +1,6 @@
 """Orchestrator for the prompt generator agent pipeline."""
 
-from typing import Any, Dict, Optional
+from typing import Any, Callable, Dict, Optional
 
 from config.settings import USE_MEMORY
 from core.exceptions import ParsingError, ProviderError
@@ -30,13 +30,19 @@ class PromptGeneratorOrchestrator:
         self.reviewer = PromptReviewer(self.provider)
         self.test_generator = TestCaseGenerator(self.provider)
 
-    def run_pipeline(self, user_input: str, max_iterations: int = 3) -> Dict[str, Any]:
+    def run_pipeline(
+        self,
+        user_input: str,
+        max_iterations: int = 3,
+        status_callback: Optional[Callable[[str], None]] = None
+    ) -> Dict[str, Any]:
         """
         Run the full pipeline with iterative improvement.
 
         Args:
             user_input (str): The user's prompt description.
             max_iterations (int): Maximum iterations for refinement loop.
+            status_callback (Optional[Callable[[str], None]]): Optional callback for status updates.
 
         Returns:
             Dict[str, Any]: A dictionary containing:
@@ -50,6 +56,8 @@ class PromptGeneratorOrchestrator:
             OrchestratorError: If a fatal error occurs during coordination.
         """
         logger.info("Starting prompt generator pipeline.")
+        if status_callback:
+            status_callback("Starting prompt generator pipeline...")
 
         result: Dict[str, Any] = {}
         iteration: int = 0
@@ -60,7 +68,10 @@ class PromptGeneratorOrchestrator:
         try:
             while iteration < max_iterations:
                 iteration += 1
-                logger.info(f"Iteration {iteration}: Generating prompt.")
+                msg = f"Iteration {iteration}: Generating prompt..."
+                logger.info(msg)
+                if status_callback:
+                    status_callback(msg)
 
                 # Stage 1: Generate prompt
                 gen_result = self.generator.run(user_input, previous_prompt, feedback)
@@ -70,6 +81,11 @@ class PromptGeneratorOrchestrator:
                 result["generated_prompt"] = current_prompt
 
                 # Stage 2: Review prompt
+                msg = f"Iteration {iteration}: Reviewing prompt..."
+                logger.info(msg)
+                if status_callback:
+                    status_callback(msg)
+                    
                 review_result = self.reviewer.run(current_prompt)
                 result["review"] = review_result
 
@@ -82,11 +98,20 @@ class PromptGeneratorOrchestrator:
                 })
 
                 if review_result["approved"]:
-                    logger.info(f"Prompt approved after {iteration} iterations.")
+                    msg = f"Prompt approved after {iteration} iterations."
+                    logger.info(msg)
+                    if status_callback:
+                        status_callback(msg)
+                        
                     result["generation_metadata"] = gen_result
                     result["history"] = history
 
                     # Stage 3: Generate test cases
+                    msg = "Generating test cases..."
+                    logger.info(msg)
+                    if status_callback:
+                        status_callback(msg)
+                        
                     try:
                         test_result = self.test_generator.run(current_prompt)
                         result["test_cases"] = test_result["test_cases"]
@@ -97,7 +122,11 @@ class PromptGeneratorOrchestrator:
                         result["test_error"] = str(te)
                     break
                 else:
-                    logger.info(f"Prompt not approved. Feedback: {review_result['feedback']}")
+                    msg = f"Prompt not approved. Feedback provided. Refining..."
+                    logger.info(msg)
+                    if status_callback:
+                        status_callback(msg)
+                        
                     previous_prompt = current_prompt
                     feedback = review_result["feedback"]
 
@@ -107,6 +136,8 @@ class PromptGeneratorOrchestrator:
                 result["reason"] = f"Prompt not approved after {max_iterations} iterations."
 
             logger.info("Pipeline completed successfully.")
+            if status_callback:
+                status_callback("Pipeline completed successfully.")
             return result
 
         except (ProviderError, ParsingError) as e:
