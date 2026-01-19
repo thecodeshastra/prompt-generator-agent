@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.2] - 2026-01-20
+
+### Version 2.0.2 Added, Updated
+
+- Added building custom gpt notes in memory dir.
+- Added building custom gpt notes in memory memory_manager
+- Added test_memory_loading_verification to test loaded memory
+- Updated formatting issues in markdown files.
+
 ## [2.0.1] - 2026-01-16
 
 ### Version 2.0.1 Updated
