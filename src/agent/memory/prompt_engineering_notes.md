@@ -8,35 +8,35 @@ Tags: Agent Prompt, Prompt
 - What it is: Crafting smart instructions (prompts) to make AI give you exactly what you want. It's about clear communication with a powerful, literal assistant.
 - Why it Matters: Unlocks AI's full potential, saves time (e.g., writing emails), and gives you control over output style and content.
 - Example of prompt
-    
-    ```
+
+    ```markdown
     Poor Prompt: "Write about dogs"
     Result: Generic, unfocused content about dogs in general
     
     Good Prompt: "Write a 500-word informative article about dog training techniques for first-time puppy owners, focusing on house training and basic commands like sit, stay, and come. Use an encouraging, supportive tone."
     Result: Specific, useful content targeted to the exact audience and purpose
     ```
-    
+
 - A good prompt can consist of 4 key elements - Instructions, Context, Input data and Output indicator.
 
 ### Core Principles (Your Golden Rules)
 
 - Be CLEAR & SPECIFIC:
-    - Clear: State exactly what you need.
-    - Specific: Use precise words, define terms, set boundaries (what NOT to do).
-    - *Be explicit, Avoid ambiguity, define terms, set boundaries
+  - Clear: State exactly what you need.
+  - Specific: Use precise words, define terms, set boundaries (what NOT to do).
+  - *Be explicit, Avoid ambiguity, define terms, set boundaries
 - Provide CONTEXT:
-    - Background: Give relevant details for the situation.
-    - Audience: Who is this for? (e.g., a beginner, your boss).
-    - Purpose: Why do you need this?
-    - Constraint communication: share limitations or requirements
+  - Background: Give relevant details for the situation.
+  - Audience: Who is this for? (e.g., a beginner, your boss).
+  - Purpose: Why do you need this?
+  - Constraint communication: share limitations or requirements
 - STRUCTURE & ORGANIZE:
-    - Flow: Present info logically.
-    - Format: Use lists, headings, or show examples.
-    - Prioritization: put the most important information first
-    - Examples: show what good output looks like
+  - Flow: Present info logically.
+  - Format: Use lists, headings, or show examples.
+  - Prioritization: put the most important information first
+  - Examples: show what good output looks like
 
-### Basic Prompt Structure (Your Recipe) Almost every good prompt needs:
+### Basic Prompt Structure (Your Recipe) Almost every good prompt needs
 
 - ROLE: Who should the AI act as? (e.g., "You are a marketing expert.")
 - CONTEXT: The background or situation.
@@ -44,7 +44,7 @@ Tags: Agent Prompt, Prompt
 - FORMAT: How should the output look? (e.g., "in bullet points," "as a table.")
 - TONE: The desired style. (e.g., "professional," "humorous.")
 - Template:
-    
+
     ```markdown
     [ROLE]: Act as [specific role/expert]
     [CONTEXT]: In the context of [situation/background]
@@ -52,9 +52,9 @@ Tags: Agent Prompt, Prompt
     [FORMAT]: Present this as [specific structure]
     [TONE]: Using a [specific style/voice]
     ```
-    
+
 - Practical Example:
-    
+
     ```markdown
     ROLE: Act as a financial advisor
     CONTEXT: For a 25-year-old recent graduate with student loans
@@ -62,7 +62,6 @@ Tags: Agent Prompt, Prompt
     FORMAT: Present as a step-by-step plan with specific dollar amounts
     TONE: Using an encouraging, non-judgmental tone
     ```
-    
 
 ### The CLEAR framework
 
@@ -106,16 +105,16 @@ CONSTRAINTS: [Any limitations or requirements]
 SUCCESS CRITERIA: [How to measure if it's working]
 ```
 
-### Prompt Libraries and Documentation:
+### Prompt Libraries and Documentation
 
 - Building Your Prompt Library:
-    - **Category Organization**: Group prompts by use case or industry
-    - **Template Creation**: Develop reusable prompt templates
-    - **Performance Tracking**: Note which prompts work best for what purposes
-    - **Version Control**: Keep track of prompt iterations and improvements
-    - **Sharing**: Document effective prompts for team use
+  - **Category Organization**: Group prompts by use case or industry
+  - **Template Creation**: Develop reusable prompt templates
+  - **Performance Tracking**: Note which prompts work best for what purposes
+  - **Version Control**: Keep track of prompt iterations and improvements
+  - **Sharing**: Document effective prompts for team use
 - Template Example:
-    
+
     ```markdown
     PROMPT TEMPLATE: Competitive Analysis
     PURPOSE: Generate structured competitor analysis
@@ -127,14 +126,14 @@ SUCCESS CRITERIA: [How to measure if it's working]
     - Present as [Format]
     - Include [Quality Controls]
     ```
-    
+
 - Essential prompting techniques
-    - Specificity over generality
-    - Context layering - Basic, situation, specific, task
-    - Output specification - Format and style specification
-    - Constraint setting - Resource, time, scope, quality
+  - Specificity over generality
+  - Context layering - Basic, situation, specific, task
+  - Output specification - Format and style specification
+  - Constraint setting - Resource, time, scope, quality
 - Prompt testing and iteration
-    - Testing process
+  - Testing process
         1. Initial Prompt: Create your first version
         2. Evaluate Output: Assess quality against your criteria
         3. Identify Gaps: What’s missing or could be better?
@@ -142,11 +141,11 @@ SUCCESS CRITERIA: [How to measure if it's working]
         5. Test Again: See if the changes improved results
         6. Document: Keep track of what works
 - Common Mistakes to Avoid
-    - Vague Instructions: Always be clear and specific.
-    - Missing Context: Give all necessary background.
-    - Overwhelming Complexity: Break big tasks into smaller ones.
-    - Ignoring Output Format: Always specify how you want the answer.
-    - No Quality Control: Always check and refine AI's output.
+  - Vague Instructions: Always be clear and specific.
+  - Missing Context: Give all necessary background.
+  - Overwhelming Complexity: Break big tasks into smaller ones.
+  - Ignoring Output Format: Always specify how you want the answer.
+  - No Quality Control: Always check and refine AI's output.
 
 ### Essential Techniques (Methods - Your Prompting Toolbox)
 
