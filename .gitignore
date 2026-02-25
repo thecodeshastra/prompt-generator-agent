@@ -17,14 +17,20 @@ __pycache__/
 # Distribution / packaging
 build/
 dist/
+site/
 *.egg-info/
 
 # ruff cache
 .ruff_cache/
 
 # remove all output files
+src/output/*.md
 output/*.md
 !output/README.md
 
 # others
 .coverage
+
+# idea and planning
+.idea/
+docs/planning/

@@ -5,18 +5,17 @@ import sys
 import unittest
 from unittest.mock import MagicMock, patch
 
-# Add src to path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 
-from core.exceptions import ProviderError
-from core.providers.ollama import OllamaProvider
-from core.providers.openai_sdk import OpenAIProvider
+from prompt_optimization_agent.core.exceptions import ProviderError
+from prompt_optimization_agent.core.providers.ollama import OllamaProvider
+from prompt_optimization_agent.core.providers.openai_sdk import OpenAIProvider
 
 
 class TestOpenAIProvider(unittest.TestCase):
     """Test OpenAIProvider."""
 
-    @patch("core.providers.openai_sdk.OpenAI")
+    @patch("prompt_optimization_agent.core.providers.openai_sdk.OpenAI")
     def test_generate_success(self, mock_openai):
         """Test successful generation."""
         mock_client = MagicMock()
@@ -27,7 +26,7 @@ class TestOpenAIProvider(unittest.TestCase):
         result = provider.generate("hello")
         self.assertEqual(result, "Success")
 
-    @patch("core.providers.openai_sdk.OpenAI")
+    @patch("prompt_optimization_agent.core.providers.openai_sdk.OpenAI")
     def test_generate_failure(self, mock_openai):
         """Test generation failure."""
         mock_client = MagicMock()
@@ -37,6 +36,7 @@ class TestOpenAIProvider(unittest.TestCase):
         provider = OpenAIProvider(api_key="sk-test")
         with self.assertRaises(ProviderError):
             provider.generate("hello")
+
 
 class TestOllamaProvider(unittest.TestCase):
     """Test OllamaProvider."""
@@ -59,6 +59,7 @@ class TestOllamaProvider(unittest.TestCase):
         provider = OllamaProvider()
         with self.assertRaises(ProviderError):
             provider.generate("hello")
+
 
 if __name__ == "__main__":
     unittest.main()

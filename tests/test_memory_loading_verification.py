@@ -1,10 +1,9 @@
-import sys
 import os
+import sys
 
-# Add src to python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 
-from agent.memory.memory_manager import MemoryManager
+from prompt_optimization_agent.agent.memory.memory_manager import MemoryManager
 
 
 def test_memory_loading():
@@ -57,9 +56,9 @@ def test_memory_loading():
     query_pattern = "Flipped Interaction Pattern"
     relevant_pattern = memory.get_relevant_notes(query_pattern, max_chars=5000)
     if "Flipped Interaction" in relevant_pattern:
-        print(f"PASS: Retrieved relevant notes for 'Flipped Interaction'.")
+        print("PASS: Retrieved relevant notes for 'Flipped Interaction'.")
     else:
-        print(f"FAIL: Did not retrieve 'Flipped Interaction'.")
+        print("FAIL: Did not retrieve 'Flipped Interaction'.")
         print(f"Returned content (first 500 chars):\n{relevant_pattern[:500]}")
 
 
