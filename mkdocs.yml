@@ -1,0 +1,49 @@
+site_name: Prompt Optimization Agent
+site_description: Enterprise-grade prompt optimization and reliability engine
+site_author: Mahendra Pawar
+repo_url: https://github.com/yourusername/prompt-optimization-agent
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+
+nav:
+  - Home: index.md
+  - Guides:
+      - guides/setup.md
+      - guides/usage.md
+      - guides/testing.md
+  - Reference:
+      - reference/api.md
+      - reference/outputs.md
+  - Product:
+      - product/PRD.md
+      - product/features.md
+      - product/workflow.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+
+plugins:
+  - search

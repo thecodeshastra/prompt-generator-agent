@@ -9,6 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.0.0] - 2026-02-25
+
+### Added
+
+- **5 Output Modes**: General LLM, Custom GPT, Agent, JSON, Action Schema (OpenAPI)
+- **Prompt Hardening Layer**: Anti-hallucination safeguards, clarification rules, edge case handling
+- **Risk Detection**: Analyze prompts for failure points, ambiguity, and hallucination risks
+- **Metadata Generation**: Version tracking, complexity analysis, model targeting
+- **Memory Integration**: Prompt engineering notes for better outputs
+- **CLI Mode Selection**: Interactive mode selection (1-5)
+- **UI Mode Selector**: Sidebar dropdown for mode selection
+- **JSON Output Support**: Toggle between Markdown and JSON output
+- **Dynamic Pipeline**: Skips risk/hardening for general_llm mode for faster execution
+
+### Changed
+
+- **Project Renamed**: Prompt Generator Agent → Prompt Optimization Agent
+- **Package Structure**: Renamed to `prompt-optimization-agent`
+- **CLI Entry Points**: `prompt-optimization-cli`, `prompt-optimization-ui`
+- **Improved Exporter**: Now includes metadata, hardened prompt, and risk analysis in output files
+
+### Fixed
+
+- **Timeout Configuration**: Increased default timeout to 180 seconds
+- **Import Paths**: Fixed module imports for CLI and UI
+
+### Documentation
+
+- **MkDocs Setup**: Material theme with organized navigation
+- **Updated Docs**: Setup, usage, API reference, testing guides
+- **New Structure**: Guides, Reference, Product, Planning sections
+
+---
+
 ## [2.0.2] - 2026-01-20
 
 ### Version 2.0.2 Added, Updated
