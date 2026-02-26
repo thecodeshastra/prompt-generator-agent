@@ -20,7 +20,7 @@ A production-grade prompt optimization and reliability engine that transforms ra
 
 ## Architecture
 
-```
+```bash
 User Input → Optimize → Review → Risk Detection → Hardening → Test Cases → Metadata → Output
 ```
 

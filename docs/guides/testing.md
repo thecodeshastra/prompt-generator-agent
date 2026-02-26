@@ -10,10 +10,10 @@ The project includes comprehensive unit tests in `tests/` directory. Tests use m
 
 ```bash
 # Install test dependencies
-pip install pytest pytest-mock
+uv pip install pytest pytest-mock pytest-cov
 
 # Run the full suite
-python3 -m pytest tests/
+uv run pytest tests/
 ```
 
 ### Using Unittest (Built-in)
@@ -63,14 +63,11 @@ streamlit run src/prompt_optimization_agent/ui.py
 ## 3. Code Style & Linting
 
 ```bash
-# Install ruff
-pip install ruff
-
 # Check for style issues
-ruff check .
+uv run ruff check .
 
 # Automatically fix minor issues
-ruff check . --fix
+uv run ruff check . --fix
 ```
 
 ## 4. Test Structure
@@ -86,6 +83,7 @@ ruff check . --fix
 ### Mode Selection
 
 Test all 5 output modes:
+
 - `general_llm` - Standard prompts
 - `custom_gpt` - GPT Builder config
 - `agent` - AI agent prompts
@@ -95,6 +93,7 @@ Test all 5 output modes:
 ### Risk Detection
 
 Verify risk analysis returns:
+
 - `overall_risk_score` (0-10)
 - `risk_level` (low/medium/high)
 - `risks` list with categories
@@ -103,6 +102,7 @@ Verify risk analysis returns:
 ### Prompt Hardening
 
 Verify hardening adds:
+
 - Anti-hallucination safeguards
 - Clarification rules
 - Edge case handlers

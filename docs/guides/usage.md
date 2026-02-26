@@ -7,7 +7,7 @@ The Prompt Optimization Agent can be used through two interfaces:
 Run the interactive command-line interface:
 
 ```bash
-python -m prompt_optimization_agent.cli
+uv run prompt-optimization-cli
 ```
 
 - **Mode Selection**: Choose from 5 output modes (General LLM, Custom GPT, Agent, JSON, Action Schema)
@@ -20,7 +20,7 @@ python -m prompt_optimization_agent.cli
 Launch the graphical interface:
 
 ```bash
-streamlit run src/prompt_optimization_agent/ui.py
+uv run streamlit run src/prompt_optimization_agent/ui.py
 ```
 
 - **Mode Selector**: Choose output mode from sidebar dropdown
