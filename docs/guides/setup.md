@@ -9,19 +9,20 @@
 
 1. **Clone and Enter**:
 
-   ```bash
-   git clone <repo_url>
-   cd prompt-optimization-agent
-   ```
+    ```bash
+    git clone <repo_url>
+    cd prompt-optimization-agent
+    ```
 
-2. **Environment Setup**:
+2. **Environment Setup (Recommended)**:
+    Using `uv` for lightning-fast package management:
 
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # Linux/Mac
-   # .venv\Scripts\activate  # Windows
-   pip install -e .
-   ```
+    ```bash
+    uv venv
+    source .venv/bin/activate  # Linux/Mac
+    # .venv\Scripts\activate  # Windows
+    uv pip install -e ".[dev]"
+    ```
 
 3. **Configure Environment**:
    Copy the example environment file and add your credentials:
@@ -30,8 +31,8 @@
    cp .env.example .env
    ```
 
-   > [!WARNING]
-   > The `.env` file is mandatory. If you are using `litellm` (Cloud providers), you **must** provide the corresponding API keys in this file.
+    !!! warning "Environment File Mandatory"
+        The `.env` file is mandatory. If you are using `litellm` (Cloud providers), you **must** provide the corresponding API keys in this file.
 
    *Note: For local Ollama usage, no API keys are required, but the `.env` file should still exist to load default settings.*
 
@@ -65,36 +66,36 @@ MODEL_NAME = "llama3.1:8b"
 
 Ensure the Ollama server is running locally before execution.
 
-> [!NOTE]
-> You can also confirm all other env variables in `.env` file. Like MAX_TOKENS, TEMPERATURE, TIMEOUT_SECONDS, etc. Just in case you want to change them.
+!!! note "Additional Settings"
+    You can also confirm all other env variables in `.env` file, such as `MAX_TOKENS`, `TEMPERATURE`, `TIMEOUT_SECONDS`, etc.
 
 ## Running the Application
 
 ### CLI
 
 ```bash
+uv run prompt-optimization-cli
+# or manually
 python -m prompt_optimization_agent.cli
-# or
-prompt-optimization-cli
 ```
 
 ### UI
 
 ```bash
-streamlit run src/prompt_optimization_agent/ui.py
+uv run streamlit run src/prompt_optimization_agent/ui.py
 ```
 
 ## Output Modes
 
 The Prompt Optimization Agent supports 5 output modes:
 
-| Mode | Description |
-|------|-------------|
-| `general_llm` | Standard prompts for ChatGPT, Claude, etc. |
-| `custom_gpt` | GPT Builder configuration format |
-| `agent` | AI agent system prompts |
-| `json` | Structured JSON for APIs/automation |
-| `action_schema` | OpenAPI 3.1.0 schemas for tool-calling |
+| Mode            | Description                                |
+|-----------------|--------------------------------------------|
+| `general_llm`   | Standard prompts for ChatGPT, Claude, etc. |
+| `custom_gpt`    | GPT Builder configuration format           |
+| `agent`         | AI agent system prompts                    |
+| `json`          | Structured JSON for APIs/automation        |
+| `action_schema` | OpenAPI 3.1.0 schemas for tool-calling     |
 
 ## Adding Custom Prompts
 

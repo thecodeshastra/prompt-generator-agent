@@ -1,7 +1,7 @@
 site_name: Prompt Optimization Agent
 site_description: Enterprise-grade prompt optimization and reliability engine
 site_author: Mahendra Pawar
-repo_url: https://github.com/yourusername/prompt-optimization-agent
+repo_url: https://github.com/thecodeshastra/prompt-optimization-agent
 
 theme:
   name: material
@@ -25,6 +25,10 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - navigation.path
+    - navigation.tracking
+    - content.code.copy
+    - content.code.annotate
 
 nav:
   - Home: index.md
@@ -42,6 +46,19 @@ nav:
 
 markdown_extensions:
   - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.magiclink
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - toc:
       permalink: true
 
